@@ -1,4 +1,4 @@
 
 
-def __print_rdd__(x):
+def print_rdd(x):
     print (x)

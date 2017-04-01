@@ -5,10 +5,9 @@ import util
 
 def output_top_resource(input_rdd, filename):
     pair_rdd = input_rdd.map(__resource_map__)
-    # valid_rdd = pair_rdd.filter(lambda x: x[0])
+    # pair_rdd.foreach(util.print_rdd)
     res = pair_rdd.reduceByKey(lambda x, y: x + y).top(10, key=lambda x: x[1])
     file_writer.write_keys(res, filename)
-    print(res)
 
 
 def __resource_map__(x):
@@ -20,7 +19,7 @@ def __resource_map__(x):
     if len(str_splits) == 2:
         second_str = str_splits[1]
         # e.g. "GET /history/apollo/ HTTP/1.0" 200 6245
-
+        second_str = second_str.replace(u'\u201c', '"').replace(u'\u201d', '"')
         req_lst = re.findall('"([^"]*)"', second_str)
         # e.g. GET /history/apollo/ HTTP/1.0
 
