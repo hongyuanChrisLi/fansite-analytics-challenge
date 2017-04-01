@@ -1,95 +1,25 @@
 from pyspark import SparkConf, SparkContext
+from utility import Utility
 
-import re
-
-
-class ProcessLog:
-    def __init__(self):
-        conf = SparkConf().setMaster('local').setAppName('Insight')
-        self.sc = SparkContext(conf=conf)
-        self.input_rdd = self.sc.textFile('../log_input/log.txt')
-
-    def find_top_hosts(self):
-        pair_rdd = self.input_rdd.map(ProcessLog.__host_map__)
-        err_rdd = pair_rdd.filter(lambda x: x[1] == 0)
-        res = pair_rdd.reduceByKey(lambda x, y: x + y) \
-            .top(10, key=lambda x: x[1])
-        print(err_rdd.count())
-        print (res)
-
-    def find_top_resource(self):
-        pair_rdd = self.input_rdd.map(ProcessLog.__resource_map__)
-        # valid_rdd = pair_rdd.filter(lambda x: x[0])
-        res = pair_rdd.reduceByKey(lambda x, y: x + y) \
-            .top(10, key=lambda x: x[1])
-
-        print (res)
+import sys
 
 
-    @staticmethod
-    def __print_rdd__(x):
-        print (x)
+log_input = sys.argv[1]
+hosts_output = sys.argv[2]
+hours_output = sys.argv[3]
+resources_output = sys.argv[4]
+blocked_output = sys.argv[5]
 
-    @staticmethod
-    def __host_map__(x):
-        count = 0
-        items = x.split('- -')
-        if len(items) == 2:
-            # check if the record is valid
-            count = 1
+print (log_input)
+print (hosts_output)
+print (resources_output)
 
-        host = items[0].rstrip()
-        return host, count
-
-    @staticmethod
-    def __resource_map__(x):
-        resource = ''
-        reply_bytes = 0
-
-        str_splits = x.split(']')
-
-        if len(str_splits) == 2:
-            second_str = str_splits[1]
-            # e.g. "GET /history/apollo/ HTTP/1.0" 200 6245
-
-            req_lst = re.findall('"([^"]*)"', second_str)
-            # e.g. GET /history/apollo/ HTTP/1.0
-
-            if len(req_lst) == 1:
-                req_str = req_lst[0]
-                # req_splits = req_str.split()
-
-                resource = ProcessLog.__get_resource__(req_str)
-
-                if resource:
-                    reply_bytes = ProcessLog.__get_reply_bytes__(second_str.replace('"' + req_str + '"', '').strip())
-
-        return resource, reply_bytes
-
-    @staticmethod
-    def __get_resource__(req):
-
-        resource = ''
-
-        if req.startswith('GET'):
-            resource = req[3:]
-        elif req.startswith(('POST', 'HEAD')):
-            resource = req[4:]
-        resource = resource.replace('HTTP/1.0', '').strip()
-        return resource
-
-    @staticmethod
-    def __get_reply_bytes__(num_str):
-
-        reply_bytes = 0
-
-        num_lst = num_str.split()
-
-        if (len(num_lst) == 2) and (num_lst[1].isdigit()):
-            reply_bytes = int(num_lst[1])
-
-        return reply_bytes
+conf = SparkConf().setMaster('local').setAppName('Insight')
+sc = SparkContext(conf=conf)
+input_rdd = sc.textFile(log_input)
+Utility.output_top_hosts(input_rdd, hosts_output)
+# Utility.output_top_resource(input_rdd, resources_output)
 
 
-pl = ProcessLog()
-pl.find_top_resource()
+
+

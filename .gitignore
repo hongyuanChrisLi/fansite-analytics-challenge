@@ -3,6 +3,8 @@
 
 #Source data
 /log_input/
+/log_output/
+/tests/test_features/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
