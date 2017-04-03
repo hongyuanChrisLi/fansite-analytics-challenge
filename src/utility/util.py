@@ -6,17 +6,29 @@ def print_rdd(x):
     print (x)
 
 
-def extract_time(str_val):
-    time_lst = re.findall(r"\[(.*?)\]", str_val)
-    time_str = time_lst[0].replace('-0400', '').strip()
-    return datetime.strptime(time_str, '%d/%b/%Y:%H:%M:%S')
+def get_host(str_val):
+    host = ''
+    str_lst = str_val.split('- -')
+    if len(str_lst) == 2:
+        host = str_lst[0].rstrip()
+    return host
+
+def get_offset_seconds(str_val, start_time):
+    curtime = __extract_time__(str_val)
+    return int((curtime - start_time).total_seconds())
 
 
 def get_start_time(logfile):
     with open(logfile, 'r') as f:
         first_line = f.readline()
-        start_time = extract_time(first_line)
+        start_time = __extract_time__(first_line)
     return start_time
+
+
+def __extract_time__(str_val):
+    time_lst = re.findall(r"\[(.*?)\]", str_val)
+    time_str = time_lst[0].replace('-0400', '').strip()
+    return datetime.strptime(time_str, '%d/%b/%Y:%H:%M:%S')
 
 
 def to_time(res, start_time):

@@ -6,6 +6,7 @@ from pyspark import SparkConf, SparkContext
 from utility import util_resources
 from utility import util_hosts
 from utility import util_hours
+from utility import util_blocked
 from utility import util
 
 
@@ -15,7 +16,6 @@ hours_output = sys.argv[3]
 resources_output = sys.argv[4]
 blocked_output = sys.argv[5]
 partitions = int(sys.argv[6])
-print(partitions)
 
 conf = SparkConf().setMaster('local').setAppName('Insight')
 sc = SparkContext(conf=conf)
@@ -28,6 +28,7 @@ util_resources.output_top_resource(input_rdd, resources_output)
 # print(start)
 start_time = util.get_start_time(log_input)
 util_hours.output_top_hours(input_rdd, start_time, hours_output, partitions)
+# util_blocked.output_blocked_hosts(input_rdd, start_time)
 # end = datetime.now()
 # print(end)
 # print(end - start)

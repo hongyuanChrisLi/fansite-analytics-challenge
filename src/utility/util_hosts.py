@@ -1,4 +1,5 @@
 import file_writer
+import util
 
 
 def output_top_hosts(input_rdd, filename):
@@ -12,10 +13,8 @@ def output_top_hosts(input_rdd, filename):
 
 def __host_map__(x):
     count = 0
-    items = x.split('- -')
-    if len(items) == 2:
+    host = util.get_host(x)
+    if host:
         # check if the record is valid
         count = 1
-
-    host = items[0].rstrip()
     return host, count
