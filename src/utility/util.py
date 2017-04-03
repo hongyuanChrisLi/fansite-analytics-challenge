@@ -82,7 +82,7 @@ def __extract_code_bytes__(reply_str):
     reply_lst = reply_str.split()
 
     if (len(reply_lst) == 2) and (reply_lst[1].isdigit()):
-        reply_code = reply_lst[0]
+        reply_code = str(reply_lst[0])
         reply_bytes = int(reply_lst[1])
 
     return reply_code, reply_bytes

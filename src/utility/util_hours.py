@@ -18,7 +18,7 @@ def output_top_hours(input_rdd, start_time, filename, partitions):
     join_rdd = (period_rdd.join(reduce_rdd)).mapValues(lambda val: val[0])
     # join_rdd.foreach(util.print_rdd)
     res = join_rdd.top(10, key=lambda x: x[1])
-    file_writer.write_list(util.to_time(res, start_time), filename)
+    file_writer.write_pair_list(util.to_time(res, start_time), filename)
 
 
 def __gen_window__(x):

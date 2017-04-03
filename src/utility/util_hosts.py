@@ -8,7 +8,7 @@ def output_top_hosts(input_rdd, filename):
     res = pair_rdd.reduceByKey(lambda x, y: x + y) \
         .top(10, key=lambda x: x[1])
     # print(err_rdd.count())
-    file_writer.write_list(res, filename)
+    file_writer.write_pair_list(res, filename)
 
 
 def __host_map__(x):
