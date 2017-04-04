@@ -35,20 +35,20 @@ def output_top_hours_tuned(input_rdd, start_time, filename, partitions):
     # hour_rdd.foreach(util.print_rdd)
 
 
-def output_top_hours(input_rdd, start_time, filename, partitions):
+def output_top_hours(input_rdd, start_time, filename):
     pair_rdd = input_rdd.map(lambda x: (util.get_offset_seconds(x, start_time), 1))
     # reduce_rdd = pair_rdd.reduceByKey(lambda x, y: x + y)
     # pair_rdd.foreach(util.print_rdd)
     # print("\n")
-    reduce_rdd = pair_rdd.reduceByKey(lambda x, y: x + y).partitionBy(partitions)
+    reduce_rdd = pair_rdd.reduceByKey(lambda x, y: x + y)
     # reduce_rdd.foreach(util.print_rdd)
     # print("\n")
     period_rdd = reduce_rdd\
         .flatMap(lambda x: __gen_window__(x))\
-        .reduceByKey(lambda x, y: x+y)
-    join_rdd = (period_rdd.join(reduce_rdd)).mapValues(lambda val: val[0])
+        .reduceByKey(lambda x, y: x+y)\
+        .filter(lambda x: x[0] >= 0)
     # join_rdd.foreach(util.print_rdd)
-    res = join_rdd.top(10, key=lambda x: x[1])
+    res = period_rdd.top(10, key=lambda x: x[1])
     file_writer.write_pair_list(util.to_time(res, start_time), filename)
 
 
