@@ -32,6 +32,3 @@ util_hours.output_top_hours_tuned(input_rdd, start_time, hours_output, partition
 # end = datetime.now()
 # print(end)
 # print(end - start)
-
-
-
