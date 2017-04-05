@@ -13,6 +13,7 @@ def get_host(str_val):
         host = str_lst[0].rstrip()
     return host
 
+
 def get_offset_seconds(str_val, start_time):
     curtime = __extract_time__(str_val)
     return int((curtime - start_time).total_seconds())
