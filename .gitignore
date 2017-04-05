@@ -1,9 +1,10 @@
 #IDEs
 .idea/
 
-#Source data
-/log_input/
-/log_output/
+#data and temp files
+/log_input/log_full.txt
+/log_input/log_mid.txt
+/log_input/log_small.txt
 /insight_testsuite/temp/
 run_sample.sh
 
