@@ -3,10 +3,18 @@ from datetime import datetime, timedelta
 
 
 def print_rdd(x):
+    """
+    used by spark action foreach
+    """
     print (x)
 
 
 def get_host(str_val):
+    """
+    Extract host/IP from string
+    :param str_val: one line of the log
+    :return: string
+    """
     host = ''
     str_lst = str_val.split('- -')
     if len(str_lst) == 2:
@@ -15,11 +23,22 @@ def get_host(str_val):
 
 
 def get_offset_seconds(str_val, start_time):
+    """
+    Calculate offset seconds based on start_time
+    :param str_val: one line of the log
+    :param start_time: datetime, extracted from the first line of the log file
+    :return: integer
+    """
     curtime = __extract_time__(str_val)
     return int((curtime - start_time).total_seconds())
 
 
 def get_start_time(logfile):
+    """
+    get datetime from the first line of the log file
+    :param logfile: filename
+    :return: datetime
+    """
     with open(logfile, 'r') as f:
         first_line = f.readline()
         start_time = __extract_time__(first_line)
@@ -27,12 +46,25 @@ def get_start_time(logfile):
 
 
 def __extract_time__(str_val):
+    """
+    private method
+    
+    extract time string and covert it to datetime
+    :param str_val: one line of the log
+    :return: datetime
+    """
     time_lst = re.findall(r"\[(.*?)\]", str_val)
     time_str = time_lst[0].replace('-0400', '').strip()
     return datetime.strptime(time_str, '%d/%b/%Y:%H:%M:%S')
 
 
 def to_time(res, start_time):
+    """
+    map offset seconds back to timestamp string for each tuple of a list
+    :param res: a list of tuples
+    :param start_time: datetime, extracted from the first line of the log file
+    :return: 
+    """
     time_res = []
     for seconds, val in res:
         curtime = (start_time + timedelta(seconds=seconds))
@@ -43,6 +75,12 @@ def to_time(res, start_time):
 
 
 def parse_request(str_val):
+    """
+    parse one line of the log 
+    extract resource name, reply code and reply bytes
+    :param str_val: one line of the log
+    :return: a tuple (resource, reply_code, reply_bytes)
+    """
     resource = ''
     reply_code = ''
     reply_bytes = 0
@@ -66,6 +104,14 @@ def parse_request(str_val):
 
 
 def __extract_resource__(req):
+    """
+    private method
+    
+    extract resource name from request string
+
+    :param req: "request" part of one line in log file
+    :return: string
+    """
     resource = ''
 
     if req.startswith('GET'):
@@ -77,6 +123,14 @@ def __extract_resource__(req):
 
 
 def __extract_code_bytes__(reply_str):
+    """
+    private method
+    
+    extract reply code and reply bytes from reply string string
+    
+    :param reply_str: "reply" part of one line in log file
+    :return: 
+    """
     reply_code = ''
     reply_bytes = 0
 
